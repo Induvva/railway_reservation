@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = 'C:\\Users\\duvva\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
+    }
     triggers {
         pollSCM('* * * * *')
     }
@@ -13,7 +16,7 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                bat 'python -m venv venv'
+                bat '"%PYTHON%" -m venv venv'
                 bat 'venv\\Scripts\\python -m pip install -r requirements.txt'
             }
         }
@@ -31,7 +34,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat 'if not exist C:\\railway-deploy mkdir C:\\railway-deploy'
-                bat 'xcopy /E /I /Y . C:\\railway-deploy'
+                bat 'xcopy /E /I /Y templates C:\\railway-deploy\\templates'
+                bat 'xcopy /E /I /Y static C:\\railway-deploy\\static'
+                bat 'copy /Y app.py C:\\railway-deploy\\'
+                bat 'copy /Y requirements.txt C:\\railway-deploy\\'
                 echo 'Deployed to C:\\railway-deploy'
             }
         }
