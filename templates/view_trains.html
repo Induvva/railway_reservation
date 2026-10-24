@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>View Trains</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="card wide-card">
+      <h2>View All Trains</h2>
+      <div class="train-list">
+        {% for train in trains %}
+        <div class="train-card">
+          <div>
+            <p class="train-no">{{ train.train_no }}</p>
+            <h3>{{ train.name }}</h3>
+            <p>{{ train.source }} → {{ train.destination }}</p>
+          </div>
+          <div class="route-meta">
+            <span>Departure: {{ train.departure }}</span>
+            <span>Arrival: {{ train.arrival }}</span>
+            <span>Duration: {{ train.duration }}</span>
+          </div>
+          <div class="fare-list">
+            {% for class_name, fare in train.classes.items() %}
+            <span>{{ class_name }} ₹{{ fare }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

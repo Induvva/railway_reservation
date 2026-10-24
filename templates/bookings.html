@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All Bookings</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('all_bookings') }}">Bookings</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="card wide">
+    <h2>All Bookings</h2>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span>Total</span>
+        <strong>{{ total_bookings }}</strong>
+      </div>
+      <div class="stat-box accent">
+        <span>Confirmed</span>
+        <strong>{{ total_confirmed }}</strong>
+      </div>
+      <div class="stat-box warning">
+        <span>Cancelled</span>
+        <strong>{{ total_cancelled }}</strong>
+      </div>
+    </div>
+
+    <form class="filters" method="GET" action="{{ url_for('all_bookings') }}">
+      <input type="search" name="search" value="{{ search_term }}" placeholder="Search by PNR, name, train, route...">
+      <select name="status">
+        <option value="">All statuses</option>
+        {% for option in status_options %}
+        <option value="{{ option }}" {% if status_filter == option %}selected{% endif %}>{{ option }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Filter</button>
+    </form>
+
+    {% if bookings %}
+    <div class="scroll">
+      <table class="grid">
+        <tr>
+          <th>PNR</th>
+          <th>Train</th>
+          <th>Name</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Date</th>
+          <th>Class</th>
+          <th>Pax</th>
+          <th>Fare</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+        {% for b in bookings %}
+        <tr>
+          <td><a href="{{ url_for('ticket', pnr=b.pnr) }}">{{ b.pnr }}</a></td>
+          <td>{{ b.train_name }} ({{ b.train_no }})</td>
+          <td>{{ b.name }}</td>
+          <td>{{ b.source }}</td>
+          <td>{{ b.destination }}</td>
+          <td>{{ b.journey_date }}</td>
+          <td>{{ b.train_class }}</td>
+          <td>{{ b.passengers }}</td>
+          <td>₹{{ b.fare }}</td>
+          <td><span class="status {{ b.status.lower() }}">{{ b.status }}</span></td>
+          <td>
+            {% if b.status != 'CANCELLED' %}
+            <form method="POST" action="{{ url_for('cancel_booking', pnr=b.pnr) }}" class="inline-form">
+              <button type="submit" class="danger-btn">Cancel</button>
+            </form>
+            {% else %}
+            <span class="muted">Cancelled</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% else %}
+    <p>No bookings match the current filters.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

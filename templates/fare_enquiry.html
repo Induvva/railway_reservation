@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fare Enquiry</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="card">
+      <h2>Fare Enquiry</h2>
+      <form method="GET" action="{{ url_for('fare_enquiry') }}">
+        <div class="row">
+          <label>From
+            <select name="source" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if source == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>To
+            <select name="destination" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if destination == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Class
+            <select name="class">
+              {% for class_name, fare in classes.items() %}
+              <option value="{{ class_name }}" {% if selected_class == class_name %}selected{% endif %}>{{ class_name }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button type="submit" class="search-btn">Check Fare</button>
+        </div>
+      </form>
+    </section>
+
+    {% if source and destination %}
+    <section class="card">
+      <h3>Fare Result</h3>
+      <p><strong>Route:</strong> {{ source }} → {{ destination }}</p>
+      <p><strong>Class:</strong> {{ selected_class }}</p>
+      <p><strong>Fare:</strong> ₹{{ fare }}</p>
+      {% if train %}
+      <p><strong>Best matching train:</strong> {{ train.name }} ({{ train.train_no }})</p>
+      {% endif %}
+    </section>
+    {% endif %}
+  </main>
+</body>
+</html>

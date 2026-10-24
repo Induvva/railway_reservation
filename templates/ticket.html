@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ticket {{ b.pnr }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('all_bookings') }}">Bookings</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="card ticket-card">
+    <h2>Booking {{ b.status }} {% if b.status == 'CONFIRMED' %}✅{% elif b.status == 'CANCELLED' %}⚠️{% else %}📌{% endif %}</h2>
+    <p class="pnr">PNR: <strong>{{ b.pnr }}</strong></p>
+
+    <div class="ticket-summary">
+      <span>{{ b.train_name }}</span>
+      <strong>{{ b.train_no }}</strong>
+    </div>
+
+    <table>
+      <tr><th>Passenger</th><td>{{ b.name }} ({{ b.age }}, {{ b.gender }})</td></tr>
+      <tr><th>Phone</th><td>{{ b.phone }}</td></tr>
+      <tr><th>Email</th><td>{{ b.email }}</td></tr>
+      <tr><th>Journey</th><td>{{ b.source }} → {{ b.destination }}</td></tr>
+      <tr><th>Date</th><td>{{ b.journey_date }}</td></tr>
+      <tr><th>Class</th><td>{{ b.train_class }}</td></tr>
+      <tr><th>Passengers</th><td>{{ b.passengers }}</td></tr>
+      <tr><th>Total Fare</th><td>{{ format_currency(b.fare) }}</td></tr>
+    </table>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('index') }}">Book Another Ticket</a>
+      {% if b.status != 'CANCELLED' %}
+      <form method="POST" action="{{ url_for('cancel_booking', pnr=b.pnr) }}" class="inline-form">
+        <button type="submit" class="danger-btn">Cancel Booking</button>
+      </form>
+      {% endif %}
+    </div>
+  </main>
+</body>
+</html>

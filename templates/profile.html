@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="card">
+      <h2>Profile</h2>
+      <table>
+        <tr><th>Member Name</th><td>{{ profile.name }}</td></tr>
+        <tr><th>Member ID</th><td>{{ profile.member_id }}</td></tr>
+        <tr><th>Email</th><td>{{ profile.email }}</td></tr>
+        <tr><th>Phone</th><td>{{ profile.phone }}</td></tr>
+        <tr><th>City</th><td>{{ profile.city }}</td></tr>
+        <tr><th>Status</th><td>{{ profile.status }}</td></tr>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

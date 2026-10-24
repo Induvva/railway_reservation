@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Railway Reservation System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>🚆 Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      {% if session.get('user_email') %}
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('all_bookings') }}">Bookings</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+      <a href="{{ url_for('login') }}">Log In</a>
+      <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="card">
+      <h2>Find Trains</h2>
+      <form method="GET" action="{{ url_for('index') }}">
+        <div class="row">
+          <label>From
+            <select name="source" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if form.get('source') == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>To
+            <select name="destination" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if form.get('destination') == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Journey Date
+            <input type="date" name="journey_date" min="{{ today }}" value="{{ form.get('journey_date', '') }}" required>
+          </label>
+          <button type="submit" class="search-btn">Search Trains</button>
+        </div>
+      </form>
+    </section>
+
+    {% if available_trains %}
+    <section class="card wide-card">
+      <h2>Available Trains</h2>
+      <div class="train-list">
+        {% for train in available_trains %}
+        <div class="train-card">
+          <div>
+            <p class="train-no">{{ train.train_no }}</p>
+            <h3>{{ train.name }}</h3>
+            <p>{{ train.source }} → {{ train.destination }}</p>
+          </div>
+          <div class="route-meta">
+            <span>Departure: {{ train.departure }}</span>
+            <span>Arrival: {{ train.arrival }}</span>
+            <span>Duration: {{ train.duration }}</span>
+          </div>
+          <div class="fare-list">
+            {% for class_name, fare in train.classes.items() %}
+            <span>{{ class_name }} ₹{{ fare }}</span>
+            {% endfor %}
+          </div>
+          <a class="btn" href="{{ url_for('index', source=train.source, destination=train.destination, journey_date=form.get('journey_date', ''), train_no=train.train_no) }}">Select Train</a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="card">
+      <h2>Book Your Ticket</h2>
+
+      {% if errors %}
+      <ul class="errors">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('book') }}">
+        <input type="hidden" name="train_no" value="{{ selected_train or form.get('train_no', '') }}">
+
+        <div class="row">
+          <label>From
+            <select name="source" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if form.get('source') == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>To
+            <select name="destination" required>
+              <option value="">-- Select --</option>
+              {% for s in stations %}
+              <option value="{{ s }}" {% if form.get('destination') == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Passenger Name
+            <input type="text" name="name" value="{{ form.get('name', '') }}" required>
+          </label>
+          <label>Age
+            <input type="number" name="age" min="1" max="120" value="{{ form.get('age', '') }}" required>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Gender
+            <select name="gender">
+              {% for g in genders %}
+              <option value="{{ g }}" {% if form.get('gender') == g %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>Passengers
+            <input type="number" name="passengers" min="1" max="6" value="{{ form.get('passengers', 1) }}" required>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Phone
+            <input type="tel" name="phone" pattern="[0-9]{10}" maxlength="10" value="{{ form.get('phone', '') }}" required>
+          </label>
+          <label>Email
+            <input type="email" name="email" value="{{ form.get('email', '') }}" required>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Journey Date
+            <input type="date" name="journey_date" min="{{ today }}" value="{{ form.get('journey_date', '') }}" required>
+          </label>
+          <label>Class
+            <select name="train_class" required>
+              {% for c, fare in classes.items() %}
+              <option value="{{ c }}" {% if form.get('train_class') == c %}selected{% endif %}>{{ c }} (₹{{ fare }})</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <button type="submit">Confirm Reservation</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

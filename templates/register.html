@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Account | Railway Reservation System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Railway Reservation System</h1>
+    <nav><a href="{{ url_for('index') }}">Home</a><a href="{{ url_for('login') }}">Log In</a></nav>
+  </header>
+  <main class="page-shell">
+    <section class="card">
+      <h2>Create Account</h2>
+      {% if errors %}
+      <ul class="errors">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+      {% endif %}
+      <form method="POST" action="{{ url_for('register') }}">
+        <label>Full Name
+          <input type="text" name="name" value="{{ form.get('name', '') }}" autocomplete="name" required>
+        </label>
+        <label>Email
+          <input type="email" name="email" value="{{ form.get('email', '') }}" autocomplete="email" required>
+        </label>
+        <label>Phone
+          <input type="tel" name="phone" value="{{ form.get('phone', '') }}" autocomplete="tel" pattern="[0-9]{10}" maxlength="10">
+        </label>
+        <label>City
+          <input type="text" name="city" value="{{ form.get('city', '') }}" autocomplete="address-level2">
+        </label>
+        <label>Password
+          <input type="password" name="password" minlength="8" autocomplete="new-password" required>
+        </label>
+        <button type="submit">Create Account</button>
+      </form>
+      <p>Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log In | Railway Reservation System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Railway Reservation System</h1>
+    <nav><a href="{{ url_for('index') }}">Home</a><a href="{{ url_for('register') }}">Create Account</a></nav>
+  </header>
+  <main class="page-shell">
+    <section class="card">
+      <h2>Log In</h2>
+      {% if error %}<p class="errors">{{ error }}</p>{% endif %}
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label>Password
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit">Log In</button>
+      </form>
+      <p>New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+    </section>
+  </main>
+</body>
+</html>

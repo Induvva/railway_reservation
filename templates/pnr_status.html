@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PNR Status | Railway Reservation System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Railway Reservation System</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('view_trains') }}">View Trains</a>
+      <a href="{{ url_for('book_trains') }}">Book Trains</a>
+      <a href="{{ url_for('fare_enquiry') }}">Fare Enquiry</a>
+      <a href="{{ url_for('pnr_status') }}">PNR Status</a>
+      <a href="{{ url_for('profile') }}">Profile</a>
+      <a href="{{ url_for('all_bookings') }}">Bookings</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+  </header>
+  <main class="page-shell">
+    <section class="card">
+      <h2>Check PNR Status</h2>
+      <form method="GET" action="{{ url_for('pnr_status') }}">
+        <label>PNR Number
+          <input type="text" name="pnr" value="{{ pnr }}" inputmode="numeric" maxlength="10" required>
+        </label>
+        <button type="submit">Check Status</button>
+      </form>
+      {% if pnr and not booking %}
+      <p class="empty-state">No booking was found for that PNR in your account.</p>
+      {% elif booking %}
+      <h3>Booking {{ booking.status }}</h3>
+      <table>
+        <tr><th>PNR</th><td>{{ booking.pnr }}</td></tr>
+        <tr><th>Train</th><td>{{ booking.train_name }} ({{ booking.train_no }})</td></tr>
+        <tr><th>Journey</th><td>{{ booking.source }} to {{ booking.destination }}</td></tr>
+        <tr><th>Date</th><td>{{ booking.journey_date }}</td></tr>
+        <tr><th>Class</th><td>{{ booking.train_class }}</td></tr>
+        <tr><th>Status</th><td>{{ booking.status }}</td></tr>
+      </table>
+      <a class="btn" href="{{ url_for('ticket', pnr=booking.pnr) }}">View Ticket</a>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>
