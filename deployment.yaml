@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: railway-reservation-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: railway-reservation
+  template:
+    metadata:
+      labels:
+        app: railway-reservation
+    spec:
+      containers:
+        - name: railway-reservation-container
+          image: induvva/railway-reservation:v1
+          ports:
+            - containerPort: 5000
